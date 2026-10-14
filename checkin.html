@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>會議簽到 長輝白金分會</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #cf142b;
+      --primary-hover: #b91c1c;
+      --primary-dark: #8e0b1c;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --white: #ffffff;
+      --success: #16a34a;
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f3f4f6;
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+    }
+
+    .checkin-wrapper {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* Top Logo / Badge */
+    .brand-top {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      color: var(--primary);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .brand-pill::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* Main Card */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border: 1px solid var(--slate-100);
+      text-align: center;
+      position: relative;
+    }
+
+    .event-tag {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .event-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .event-sub {
+      font-size: 14px;
+      color: var(--slate-600);
+      margin-bottom: 24px;
+    }
+
+    /* Form Mode */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate-800);
+      margin-bottom: 8px;
+    }
+
+    .input-name {
+      width: 100%;
+      height: 56px;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border: 2px solid var(--slate-200);
+      border-radius: 12px;
+      background-color: var(--slate-50);
+      color: var(--slate-900);
+      text-align: center;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .input-name:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: var(--white);
+      box-shadow: 0 0 0 4px rgba(207, 20, 43, 0.12);
+    }
+
+    .input-hint {
+      font-size: 12px;
+      color: var(--slate-500);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .btn-checkin {
+      width: 100%;
+      height: 54px;
+      background: linear-gradient(135deg, #cf142b 0%, #b91c1c 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(207, 20, 43, 0.35);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-checkin:hover:not(:disabled) {
+      background: linear-gradient(135deg, #b91c1c 0%, #8e0b1c 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-checkin:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn-checkin:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Success Result Card */
+    #successCard {
+      display: none;
+      animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .success-icon {
+      font-size: 60px;
+      margin-bottom: 12px;
+    }
+
+    .success-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--success);
+      margin-bottom: 6px;
+    }
+
+    .guest-welcome {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 14px;
+    }
+
+    .checkin-info-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      color: #166534;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .checkin-info-item {
+      margin-bottom: 4px;
+    }
+
+    .btn-zoom {
+      display: block;
+      width: 100%;
+      background: #2563eb;
+      color: var(--white);
+      text-decoration: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+
+    .btn-again {
+      display: block;
+      width: 100%;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    .footer-text {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--slate-500);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="checkin-wrapper">
+
+    <!-- Top Badge -->
+    <div class="brand-top">
+      <div class="brand-pill">長輝白金分會 · 來賓簽到</div>
+    </div>
+
+    <!-- Check-in Form Card -->
+    <div class="card" id="formCard">
+      <div class="event-tag">BNI BUSINESS MEETING</div>
+      <h1 class="event-title">會議簽到</h1>
+      <p class="event-sub">長輝白金分會 線上商務會議</p>
+
+      <form id="checkinForm">
+        <div class="form-group">
+          <label class="form-label" for="guestName">你的大名</label>
+          <input 
+            type="text" 
+            id="guestName" 
+            class="input-name" 
+            placeholder="請輸入您的大名" 
+            required 
+            autofocus 
+            autocomplete="name"
+          >
+          <div class="input-hint">💡 系統將自動比對報名清單，並完成簽到登記</div>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-checkin">
+          <span class="spinner" id="spinner"></span>
+          <span id="btnText">送出簽到</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Success Result Card -->
+    <div class="card" id="successCard">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">簽到成功！</div>
+      <div class="guest-welcome" id="welcomeName">歡迎蒞臨，貴賓！</div>
+
+      <div class="checkin-info-box">
+        <div class="checkin-info-item">⏱️ <strong>簽到時間</strong>：<span id="checkinTime"></span></div>
+        <div class="checkin-info-item">📋 <strong>報到狀態</strong>：<span id="checkinStatus">已完成系統簽到</span></div>
+        <div class="checkin-info-item">👔 <strong>會議小提醒</strong>：請著正式服裝，備妥 20 秒自我介紹</div>
+      </div>
+
+      <a href="https://zoom.us/j/85452773873" target="_blank" class="btn-zoom">
+        📹 一鍵進入 Zoom 會議室
+      </a>
+
+      <button type="button" class="btn-again" onclick="resetCheckIn()">
+        ➕ 替同行友人簽到
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-text">
+      <p>© 2026 BNI 長輝白金分會 會務秘書處</p>
+    </div>
+
+  </div>
+
+  <script>
+    var formCard = document.getElementById('formCard');
+    var successCard = document.getElementById('successCard');
+    var checkinForm = document.getElementById('checkinForm');
+    var guestNameInput = document.getElementById('guestName');
+    var btnSubmit = document.getElementById('btnSubmit');
+    var spinner = document.getElementById('spinner');
+    var btnText = document.getElementById('btnText');
+    var welcomeName = document.getElementById('welcomeName');
+    var checkinTime = document.getElementById('checkinTime');
+    var checkinStatus = document.getElementById('checkinStatus');
+
+    checkinForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var name = guestNameInput.value.trim();
+      if (!name) {
+        alert('請輸入您的大名！');
+        guestNameInput.focus();
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      spinner.style.display = 'inline-block';
+      btnText.textContent = '簽到處理中...';
+
+      var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzmbb_D8TAj7B5pZINM-sLZxirejAFWrSk0SRr3lptOVEfF6hNplcHgkxJc2VMtVEabBg/exec';
+
+      function handleCheckinResponse(response) {
+        btnSubmit.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = '送出簽到';
+
+        if (response && response.success) {
+          showSuccess(name, response.data);
+        } else {
+          alert('簽到失敗：' + (response ? response.message : '請向會務秘書回報'));
+        }
+      }
+
+      function handleCheckinError(error) {
+        btnSubmit.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = '送出簽到';
+        alert('系統連線異常：' + (error.message || error));
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(handleCheckinResponse)
+          .withFailureHandler(handleCheckinError)
+          .submitCheckIn(name);
+      } else {
+        // GitHub Pages 或外部環境：直接以 GET 呼叫後端 API
+        var params = new URLSearchParams();
+        params.append('action', 'checkin');
+        params.append('name', name);
+
+        fetch(GAS_API_URL + '?' + params.toString(), {
+          method: 'GET',
+          mode: 'cors',
+          redirect: 'follow'
+        })
+        .then(function(res) { return res.json(); })
+        .then(handleCheckinResponse)
+        .catch(handleCheckinError);
+      }
+    });
+
+    function showSuccess(name, data) {
+      formCard.style.display = 'none';
+      welcomeName.textContent = '歡迎蒞臨，' + name + ' 貴賓！';
+      checkinTime.textContent = (data && data.timestamp) ? data.timestamp : new Date().toLocaleTimeString();
+      checkinStatus.textContent = (data && data.note) ? data.note : '已完成系統簽到登記';
+      successCard.style.display = 'block';
+    }
+
+    function resetCheckIn() {
+      guestNameInput.value = '';
+      successCard.style.display = 'none';
+      formCard.style.display = 'block';
+      guestNameInput.focus();
+    }
+  </script>
+</body>
+</html>
